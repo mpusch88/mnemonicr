@@ -2,8 +2,14 @@ param(
     [string]$InputString
 )
 
-function IsEmail($input) {
-    return $input -match "^[\w\.-]+@[\w\.-]+\.\w+$"
+function IsEmail($inputString) {
+    return $inputString -match "^[\w\.-]+@[\w\.-]+\.\w+$"
+}
+
+foreach ($arg in $args) {
+    if($arg -eq "-FirstSearch") {
+        Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn
+    }
 }
 
 $entries = $InputString -split ";"
@@ -16,10 +22,14 @@ foreach ($entry in $entries) {
         $mnems += Get-ADUser -Filter "EmailAddress -eq '$entry'" -Properties EmailAddress, SamAccountName | Select-Object SamAccountName
     } else {
         $nameParts = $entry -split ","
+
         if ($nameParts.Length -eq 2) {
             $firstName = $nameParts[0].Trim()
             $lastName = $nameParts[1].Trim()
             $mnems += Get-ADUser -Filter "GivenName -eq '$firstName' -and Surname -eq '$lastName'" -Properties GivenName, Surname, SamAccountName | Select-Object SamAccountName
+        }
+        else {
+            Write-Host "No results found"
         }
     }
 }
