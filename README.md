@@ -22,3 +22,17 @@ Mnemonicr is a simple program that allows the user to search for user accounts i
 3. Click the `Search` button to search for user accounts.
 4. The mnemonics for the matched user accounts will be displayed in the results box.
 5. To copy the mnemonics, select the mnemonics and click the `Copy` button.
+
+## Context
+
+This project uses a modified version of  <https://github.com/mpoon/gpt-repository-loader> to maintain up to date code context for use with ChatGPT / GPT4.
+
+Example command:
+
+```bash
+python gpt_repository_loader.py "../mnemonicr" -o "../mnemonicr/context.txt" -t 4000 -m 10
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
