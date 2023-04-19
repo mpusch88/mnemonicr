@@ -30,7 +30,7 @@ This project uses a modified version of  <https://github.com/mpoon/gpt-repositor
 Example command:
 
 ```bash
-python gpt_repository_loader.py "../mnemonicr" -o "../mnemonicr/context.txt" -t 4000 -m 10
+python gpt_repository_loader.py ../mnemonicr -p ../mnemonicr/.preamble -o ../mnemonicr/context.txt -t 4000 -m 10
 ```
 
 ## License
