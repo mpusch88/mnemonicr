@@ -27,7 +27,7 @@ foreach ($entry in $entries) {
 
         Write-Host "Email: $entry"
 
-        $mnems += Get-ADUser -Filter "EmailAddress -eq '$entry'" -Properties EmailAddress, SamAccountName | Select-Object SamAccountName
+        $mnems += Get-Mailbox $entry | Select-Object SamAccountName
     }
     else {
         $nameParts = $entry -split ","
@@ -38,7 +38,7 @@ foreach ($entry in $entries) {
 
             Write-Host "Name: $firstName $lastName"
 
-            $mnems += Get-ADUser -Filter "GivenName -eq '$firstName' -and Surname -eq '$lastName'" -Properties GivenName, Surname, SamAccountName | Select-Object SamAccountName
+            $mnems += Get-Mailbox $lastName, $firstName | Select-Object SamAccountName
         }
         else {
             $noResults = @{
