@@ -9,14 +9,14 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Input;
 using System.Windows.Controls;
-using System.Linq;
 
 namespace mnemonicr
 {
-	public partial class MainWindow : Window
+    public partial class MainWindow : Window
 	{
 		private Runspace _rs;
 		public static bool firstSearch = true;
+		private static bool clearResults = true;
 
 		public MainWindow()
 		{
@@ -69,9 +69,6 @@ namespace mnemonicr
 			List<string> inputList = new List<string>();
 			List<string> mnemonics = new List<string>();
 
-			// TODO: turn this into checkbox
-			bool clearResults = false;
-
 			if (!clearResults && ResultListBox_input.ItemsSource != null)
 			{
 				foreach (string item in ResultListBox_input.ItemsSource)
@@ -84,7 +81,7 @@ namespace mnemonicr
 				}
 			}
 
-			string input = InputTextBox.Text.Trim();
+            string input = InputTextBox.Text.Trim();
 
 			input = input.Replace("\r\n", ";").Replace(";;", ";");
 
@@ -96,7 +93,13 @@ namespace mnemonicr
 			string script = File.ReadAllText("script.ps1");
 
 			mnemonics.AddRange(RunScript(script, input, firstSearch));
-			ResultListBox_mnem.ItemsSource = mnemonics;
+
+
+            // test for:	The term 'Add-PSSnapin' is not recognized as a name of a cmdlet, function, script file, or executable program.
+            //				Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+			
+
+            ResultListBox_mnem.ItemsSource = mnemonics;
 
 			firstSearch = false;
 		}
@@ -114,12 +117,22 @@ namespace mnemonicr
 			}
 		}
 
-		private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			CopyButton.IsEnabled = (ResultListBox_input.SelectedItems.Count > 0) || (ResultListBox_mnem.SelectedItems.Count > 0);
 		}
 
-		private void CopySelectedItems()
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+			clearResults = true;
+        }
+
+        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+			clearResults = false;
+        }
+
+        private void CopySelectedItems()
 		{
 			ListBox? focusedListBox = null;
 
@@ -150,5 +163,5 @@ namespace mnemonicr
 			base.OnClosed(e);
 			_rs.Dispose();
 		}
-	}
+    }
 }
