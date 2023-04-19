@@ -1,37 +1,62 @@
 param(
-    [string]$InputString
+    [string]$InputString,
+    [switch]$FirstSearch
 )
 
 function IsEmail($inputString) {
     return $inputString -match "^[\w\.-]+@[\w\.-]+\.\w+$"
 }
 
-foreach ($arg in $args) {
-    if($arg -eq "-FirstSearch") {
-        Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn
-    }
+Write-Host("Input string: $InputString")
+Write-Host("First search: $FirstSearch")
+
+if ($FirstSearch) {
+    Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn
 }
 
 $entries = $InputString -split ";"
 $mnems = @()
 
 foreach ($entry in $entries) {
+    
+    Write-Host("Processing entry: $entry")
+
     $entry = $entry.Trim()
 
     if (IsEmail $entry) {
+
+        Write-Host "Email: $entry"
+
         $mnems += Get-ADUser -Filter "EmailAddress -eq '$entry'" -Properties EmailAddress, SamAccountName | Select-Object SamAccountName
-    } else {
+    }
+    else {
         $nameParts = $entry -split ","
 
         if ($nameParts.Length -eq 2) {
             $firstName = $nameParts[0].Trim()
             $lastName = $nameParts[1].Trim()
+
+            Write-Host "Name: $firstName $lastName"
+
             $mnems += Get-ADUser -Filter "GivenName -eq '$firstName' -and Surname -eq '$lastName'" -Properties GivenName, Surname, SamAccountName | Select-Object SamAccountName
         }
         else {
-            Write-Host "No results found"
+            $noResults = @{
+                Message = "No results found for $entry"
+            }
+
+            $obj = New-Object -TypeName PsObject -Property $noResults
+
+            $mnems += $obj
         }
     }
 }
 
-$mnems | ForEach-Object { $_.SamAccountName }
+$mnems | ForEach-Object {
+    if ($_.Message) {
+        $_.Message
+    }
+    else {
+        $_.SamAccountName
+    }
+}
