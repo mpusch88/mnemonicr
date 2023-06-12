@@ -1,6 +1,9 @@
 param(
     [string]$InputString,
-    [switch]$FirstSearch
+    [switch]$FirstSearch,
+    [switch]$EXO_On,
+    [switch]$EXO_Modified,
+    [string]$Username
 )
 
 function IsEmail($inputString) {
@@ -10,8 +13,21 @@ function IsEmail($inputString) {
 Write-Host("Input string: $InputString")
 Write-Host("First search: $FirstSearch")
 
+if ($EXO_On) {
+    Write-Host("Username: $Username")
+}
+
 if ($FirstSearch) {
     Add-PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn
+    
+    if($EXO_On) {
+        Connect-ExchangeOnline -UserPrincipalName $Username -ShowProgress $false -ShowBanner $false
+    }
+}
+else {
+    if($EXO_Modified && !$EXO_On) {
+        Disconnect-ExchangeOnline
+    }
 }
 
 $entries = $InputString -split ";"

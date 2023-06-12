@@ -10,6 +10,8 @@ using System.IO;
 using System.Windows.Input;
 using System.Windows.Controls;
 
+// TODO: Add a way to submit username and enable exo in interface
+
 namespace mnemonicr
 {
     public partial class MainWindow : Window
